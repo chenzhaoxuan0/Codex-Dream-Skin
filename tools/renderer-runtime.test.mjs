@@ -432,6 +432,16 @@ export async function runRendererRuntimeTest(assetRoot) {
   );
   assert.match(
     css,
+    /data-composer-home-utility-bar-position="above"\][\s\S]{0,180}box-sizing:\s*border-box;[\s\S]{0,100}width:\s*100%\s*!important;[\s\S]{0,100}margin-inline:\s*0\s*!important;/,
+    "The 26.825 Home utility cap must align with the ComposerLayoutRoot width.",
+  );
+  assert.match(
+    css,
+    /data-composer-placement="home"\]:has\(\[data-composer-home-utility-bar-position="above"\]\)[\s\S]{0,260}(?:__DREAM_SELECTOR_COMPOSER_CHROME__|:is\(\.composer-surface-chrome,[^)]*\))[\s\S]{0,120}border-radius:\s*0 0 22px 22px\s*!important;/,
+    "A Home Composer below the native utility cap must not expose top corners.",
+  );
+  assert.match(
+    css,
     /data-composer-placement="thread"\][\s\S]{0,260}> \[class\*="_ComposerLayoutBody_"\][\s\S]{0,220}background:\s*transparent\s*!important;[\s\S]{0,180}backdrop-filter:\s*none\s*!important;/,
     "The thread Composer body must stay transparent behind the public ComposerLayoutRoot.",
   );
@@ -439,6 +449,16 @@ export async function runRendererRuntimeTest(assetRoot) {
     css,
     /(?:__DREAM_SELECTOR_HOME_UTILITY__|:is\(\[class\*="_homeUtilityBar_"\], \[class\*="_ComposerHomeUtilityBar_"\]\))[\s\S]{0,100}position:\s*relative;[\s\S]{0,60}z-index:\s*3;/,
     "The Home project utility must remain above the composer surface.",
+  );
+  assert.match(
+    css,
+    /(?:__DREAM_SELECTOR_HEADER_TINT__|header:is\([^}]+\))[\s\S]{0,180}\[class\*="_Toolbar_"\] > \*\s*\{[\s\S]{0,80}background-color:\s*transparent\s*!important;/,
+    "The 26.825 header toolbar groups must not retain native opaque islands.",
+  );
+  assert.match(
+    css,
+    /\[class\*="_CodeBlock_"\] \[class\*="_StickyActionBar_"\][\s\S]{0,160}background:\s*rgb\(var\(--ds-panel-rgb\) \/ \.72\)\s*!important;[\s\S]{0,140}border-bottom:\s*1px solid rgb\(var\(--ds-muted-rgb\) \/ \.14\)\s*!important;/,
+    "The 26.825 code-block sticky action bar must inherit the Dream Skin palette.",
   );
   assert.match(
     css,
