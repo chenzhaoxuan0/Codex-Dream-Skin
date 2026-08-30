@@ -437,8 +437,8 @@ export async function runRendererRuntimeTest(assetRoot) {
   );
   assert.match(
     css,
-    /data-composer-placement="home"\]:has\(\[data-composer-home-utility-bar-position="above"\]\)[\s\S]{0,260}(?:__DREAM_SELECTOR_COMPOSER_CHROME__|:is\(\.composer-surface-chrome,[^)]*\))[\s\S]{0,120}border-radius:\s*0 0 22px 22px\s*!important;/,
-    "A Home Composer below the native utility cap must not expose top corners.",
+    /data-composer-placement="home"\]:has\(\[data-composer-home-utility-bar-position="above"\]\)[\s\S]{0,260}(?:__DREAM_SELECTOR_COMPOSER_CHROME__|:is\(\.composer-surface-chrome,[^)]*\))[\s\S]{0,120}border-radius:\s*22px\s*!important;/,
+    "A Home Composer below the native utility cap keeps rounded corners on every side.",
   );
   assert.match(
     css,
