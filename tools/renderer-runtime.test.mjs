@@ -442,6 +442,11 @@ export async function runRendererRuntimeTest(assetRoot) {
   );
   assert.match(
     css,
+    /:is\(\[data-ds-part="home"\], \[role="main"\]:has\(\[data-testid="home-icon"\]\)\)[\s\S]{0,180}(?:__DREAM_SELECTOR_COMPOSER_CHROME__|:is\(\.composer-surface-chrome,[^)]*\))[\s\S]{0,100}overflow:\s*hidden\s*!important;/,
+    "The Home Composer must clip native children to its rounded edge.",
+  );
+  assert.match(
+    css,
     /data-composer-placement="thread"\][\s\S]{0,260}> \[class\*="_ComposerLayoutBody_"\][\s\S]{0,220}background:\s*transparent\s*!important;[\s\S]{0,180}backdrop-filter:\s*none\s*!important;/,
     "The thread Composer body must stay transparent behind the public ComposerLayoutRoot.",
   );
