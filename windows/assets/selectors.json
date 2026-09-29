@@ -2,8 +2,13 @@
   "schema": "codex-dream-skin-selectors/1",
   "description": "双端统一选择器契约。scope 与 required 来自双端 DOM 快照实测；shell-main 与 header-tint 另由 2026-07-31 Codex 26.727.40816 真实 macOS renderer 复核。doctor / CI 应逐条 querySelector 并按 tier 判级：L1 缺失=皮肤主行为受损，L2 缺失=精修静默降级。",
   "verifiedAgainst": {
-    "date": "2026-08-27",
+    "date": "2026-09-29",
     "codexVersions": [
+      {
+        "version": "26.924",
+        "platform": "windows",
+        "evidence": "maintainer + reporter: 报告者侧 #415 报告 26.924.1866.0/2738.0 下主区会话与输入框全部不可见（homeSurface/hero/composer 均 0x0，verify pass:false），#414 报告 26.924.20706 重启后对话栏消失，PR #416 以 CDP 逐条二分定位到 main-content-top-fade 裸属性选择器命中包裹整条路由的容器。维护者侧本机复核：已注册 Codex 26.924.2738.0（OpenAI.Codex_26.924.2738.0_x64）经 loopback CDP 读 computed style——被收窄的路由容器 'relative flex min-h-0 flex-1 [data-app-shell-main-content-top-fade]' 仍有 2 个子节点但 display 为 flex 而非 none，thread 与 composer 正常渲染；titlebar 44px、main/aside y=44、[data-app-shell-frame][data-app-shell-page-surface] 的 padding-inline-end/padding-block-end 为 0px、[class*=\"_PageSurface_\"][aria-hidden=\"true\"] 的 border-radius 0px + box-shadow none 均实测命中。CodexPlusPlus 侧 #2332/#2323 独立复现同一根因，PR #2334 采取直接删除裸属性分支的等价修法。仍未逐页目视验收，且未在 26.924.6891.0 上复核"
+      },
       {
         "version": "26.818",
         "platform": "windows",
@@ -49,7 +54,10 @@
     "gaps": [
       "Windows 26.727 之后至今没有维护者本机 renderer 复核",
       "#376：26.814.5517.0 上 Codex 设置→外观切换深浅色后主题混色，settings/appearance 路径的锚点行为未验证",
-      "#371：Windows 顶部与底部区域配色与主区不一致，尚未确认是 header-tint 未命中还是原生层未被覆盖"
+      "#371：Windows 顶部与底部区域配色与主区不一致，尚未确认是 header-tint 未命中还是原生层未被覆盖",
+      "26.924 的 PageSurface 几何补丁（data-app-shell-frame / data-app-shell-page-surface / _PageSurface_ 装饰层）已在 26.924.2738.0 上经本机 loopback CDP 复核命中；这些锚点未进入 selector 合同，只以结构选择器写在 CSS 兼容区",
+      "26.924 的 Projects / Pull Requests / Customize 工具型路由不透明表面（focus-area 直子 .bg-surface、data-app-shell-pane-frame、[data-sticky]::before）只在 26.924.2738.0 上计数验证，未在 26.924.6891.0 上复核",
+      "26.924 症状中的『思考文本/工具状态异常圆角框』未在任何 issue 独立立案，本仓库保留既有可读性卡片设计未做反向改动"
     ]
   },
   "appearanceSignal": {
@@ -69,7 +77,7 @@
     { "key": "shell-main", "selector": "main:is(.main-surface, [data-app-shell-main-surface], [class*=\"_MainContentSurface_\"])", "tier": "L1", "scope": "all", "required": true, "notes": "全局主表面。26.727.40816 提供 data-app-shell-main-surface，并使用 _MainContentSurface_ CSS Module；保留旧类兼容历史版本，前缀只限定在 main 元素。mac 设置页缺失（win 存在），缺失时整页仅 L0" },
     { "key": "left-panel", "selector": "aside.app-shell-left-panel", "tier": "L1", "scope": "all", "required": true, "notes": "左侧栏；收起/重建时会移除节点，勿在其消失时清皮" },
     { "key": "header-tint", "selector": "header:is(.app-header-tint, [data-app-shell-header-edge-scroll], [class*=\"_Header_\"])", "tier": "L1", "scope": "all", "required": true, "notes": "顶栏。26.727.40816 输出 data-app-shell-header-edge-scroll 并使用 _Header_ CSS Module；保留旧类兼容历史版本，前缀只限定在 header 元素。皮肤不得覆盖其 position/z-index（既有回归约束）" },
-    { "key": "main-content-top-fade", "selector": ":is(.app-shell-main-content-top-fade, [data-app-shell-main-content-top-fade], [class*=\"_MainContentTopFade_\"])", "tier": "L2", "scope": "all", "required": false, "notes": "主区顶部渐变遮罩。26.727.40816 提供 data-app-shell-main-content-top-fade 并使用 _MainContentTopFade_ CSS Module；用于在主题背景下移除原生白色 fade" },
+    { "key": "main-content-top-fade", "selector": ":is(.app-shell-main-content-top-fade, [data-app-shell-main-content-top-fade]:not(:has(*)), [class*=\"_MainContentTopFade_\"])", "tier": "L2", "scope": "all", "required": false, "notes": "主区顶部渐变遮罩。26.727.40816 提供 data-app-shell-main-content-top-fade 并使用 _MainContentTopFade_ CSS Module；用于在主题背景下移除原生白色 fade。26.924 把该属性从遮罩层移到了包裹整条路由的容器上，裸属性会连带命中 thread 滚动容器与 composer，导致任意会话右栏空白（#415/#414）。属性形式因此限定为无子元素的原生遮罩层，两个旧 class 形式保持不变" },
     { "key": "home-icon", "selector": "[data-testid=\"home-icon\"]", "tier": "L1", "scope": "home", "required": true, "notes": "首页判定信号，双端一致" },
     { "key": "home-route", "selector": "[role=\"main\"]:has([data-testid=\"home-icon\"])", "tier": "L1", "scope": "home", "required": true, "notes": "首页容器。实测 [role=main] 仅存在于首页——它不是通用路由锚点，thread 页没有" },
     { "key": "home-route-css", "selector": "[role=\"main\"]", "tier": "L1", "scope": "home", "required": true, "notes": "home-route 的 CSS 可组合别名：不含 :has()。CSS 禁止 :has() 嵌套，home-route 原选择器一旦写进 :has()/:not(:has()) 整条规则会被解析器丢弃（v1.3.1 全窗口首页与任务页氛围背景因此失效）。依据与 home-route 相同的实测：[role=main] 仅存在于首页；该锚点缺失时 CSS 路由门控整体失效，故必须按 L1 必需项监控" },

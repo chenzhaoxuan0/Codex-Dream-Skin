@@ -20,7 +20,13 @@ assert.doesNotMatch(selectorFor("shell-main"), /_[A-Za-z]+_[a-z0-9]{4,}/);
 assert.doesNotMatch(selectorFor("header-tint"), /_[A-Za-z]+_[a-z0-9]{4,}/);
 assert.equal(
   selectorFor("main-content-top-fade"),
-  ':is(.app-shell-main-content-top-fade, [data-app-shell-main-content-top-fade], [class*="_MainContentTopFade_"])',
+  ':is(.app-shell-main-content-top-fade, [data-app-shell-main-content-top-fade]:not(:has(*)), [class*="_MainContentTopFade_"])',
+  "26.924 moved the attribute onto the route container, so the attribute form must be limited to the childless native overlay or it hides the whole thread (#415/#414).",
+);
+assert.doesNotMatch(
+  selectorFor("main-content-top-fade"),
+  /\[data-app-shell-main-content-top-fade\](?!:not\(:has\(\*\)\))/,
+  "A bare top-fade attribute selector would match the 26.924 route container and hide thread + composer.",
 );
 assert.equal(
   selectorFor("message"),

@@ -405,7 +405,15 @@ export async function runRendererRuntimeTest(assetRoot) {
   assert.match(css, /main:is\(\.main-surface, \[data-app-shell-main-surface\], \[class\*=\"_MainContentSurface_\"\]\):has\(\[role="main"\]\)/);
   assert.match(css, /main:is\(\.main-surface, \[data-app-shell-main-surface\], \[class\*=\"_MainContentSurface_\"\]\):not\(:has\(\[role="main"\]\)\)/);
   assert.match(css, /header:is\(\.app-header-tint, \[data-app-shell-header-edge-scroll\], \[class\*=\"_Header_\"\]\)/);
-  assert.match(css, /:is\(\.app-shell-main-content-top-fade, \[data-app-shell-main-content-top-fade\], \[class\*=\"_MainContentTopFade_\"\]\)/);
+  assert.match(css, /:is\(\.app-shell-main-content-top-fade, \[data-app-shell-main-content-top-fade\]:not\(:has\(\*\)\), \[class\*="_MainContentTopFade_"\]\)/);
+  // 26.924 moved the attribute onto the route container. A bare attribute here
+  // would let `display: none` hide the thread scroll container and the composer
+  // with it, which is the empty-pane regression in #415 / #414 (#2332 upstream).
+  assert.doesNotMatch(
+    css,
+    /\[data-app-shell-main-content-top-fade\](?!:not\(:has\(\*\)\))/,
+    "A bare main-content-top-fade attribute selector would hide the 26.924 route container.",
+  );
   assert.doesNotMatch(css, /:has\([^()]*:has\(/);
   assert.doesNotMatch(
     css,
@@ -414,8 +422,15 @@ export async function runRendererRuntimeTest(assetRoot) {
   );
   assert.match(
     css,
-    /:is\(\[class~="group\/application-menu-top-bar"\], \[class\*="_ApplicationMenuTopBar_"\]\)[\s\S]{0,140}background:\s*rgb\(var\(--ds-panel-rgb\) \/ \.38\)/,
-    "The current Windows application menu bar must use the themed acrylic surface.",
+    /:is\(\[class~="group\/application-menu-top-bar"\], \[class\*="_ApplicationMenuTopBar_"\]\)[\s\S]{0,200}background:\s*rgb\(var\(--ds-bg-rgb\) \/ \.72\)/,
+    "The Windows application menu bar must sit on the themed page backdrop so it reads as one surface with the routes below (#371).",
+  );
+  // 26.924: the bar's own border-bottom and drop shadow are the bright seam
+  // that separated it from the page. Both must stay cleared.
+  assert.match(
+    css,
+    /:is\(\[class~="group\/application-menu-top-bar"\], \[class\*="_ApplicationMenuTopBar_"\]\)\s*\{[^}]*border-bottom:\s*0\s*!important;[^}]*box-shadow:\s*none\s*!important;/,
+    "The application menu bar must not repaint a seam under itself.",
   );
   assert.match(css, /--ds-task-full-veil/);
   assert.match(css, /data-dream-task-mode="full"/);

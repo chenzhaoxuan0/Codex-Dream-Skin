@@ -25,3 +25,7 @@ TASK_PROGRESS.md
 修复记录*.md
 docs/architecture-cdp-and-cross-platform-grok45.md
 docs/unified-skin-runtime-plan.md
+
+# machine-local theme preset (multi-MiB wallpaper, applied only on this host)
+macos/presets/preset-twilight-mirror/
+windows/presets/preset-twilight-mirror/
